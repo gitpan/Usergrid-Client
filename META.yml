@@ -20,7 +20,7 @@ provides:
     file: lib/Usergrid/Collection.pm
   Usergrid::Core:
     file: lib/Usergrid/Core.pm
-    version: '0.1'
+    version: '0.11'
   Usergrid::Entity:
     file: lib/Usergrid/Entity.pm
   Usergrid::Request:
@@ -31,6 +31,7 @@ requires:
   Moose: '0'
   REST::Client: '0'
   URI::Template: '0'
+  namespace::autoclean: '0'
 resources:
   license: http://www.apache.org/licenses/LICENSE-2.0.txt
-version: '0.1'
+version: '0.11'

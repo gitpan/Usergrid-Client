@@ -5,7 +5,7 @@ Apache Usergrid's REST API.
 
 ## Quickstart
 
-Install Usergrid::Client from CPAN (not yet available):
+Install Usergrid::Client from CPAN:
 
     $ sudo cpan install Usergrid::Client
 
@@ -19,7 +19,7 @@ use Usergrid::Client;
 my $client = Usergrid::Client->new(
   organization => 'test-organization',
   application  => 'test-app',
-  api_url      => 'http://localhost:8080/ROOT',
+  api_url      => 'http://localhost:8080',
   trace        => 0
 );
 
@@ -124,6 +124,11 @@ For generating reports on code coverage:
 The generated report artifacts are located in cover_db/.
 
 ## Release notes
+
+### 0.11
+
+* Added namespace::autoclean.pm as a dependency to fix build break on some
+  platforms
 
 ### 0.1
 
