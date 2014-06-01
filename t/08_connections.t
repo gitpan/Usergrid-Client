@@ -16,7 +16,7 @@ my $password        = 'Testuser123$';
 ###########
 
 if (_check_port($hostname, $port)) {
-  plan tests => 8;
+  plan tests => 5;
 } else {
   plan skip_all => "server $api_url not reachable"
 }
@@ -28,7 +28,7 @@ sub _check_port {
   return 1;
 }
 
-my ($user, $token, $book, $collection, $subset);
+my ($user, $token, $book, $book1, $book2, $book3, $collection);
 
 # Create the client object that will be used for all subsequent requests
 my $client = Usergrid::Client->new(
@@ -44,49 +44,35 @@ $user = $client->add_entity("users", { username=>$username, password=>$password 
 $token = $client->login($username, $password);
 
 eval {
+  $book1 = $client->add_entity("books", { name => "Neuromancer", author => "William Gibson" });
+  $book2 = $client->add_entity("books", { name => "Count Zero", author => "William Gibson" });
+  $book3 = $client->add_entity("books", { name => "Mona Lisa Overdrive", author => "William Gibson" });
 
-  $collection = $client->get_collection("books");
+  $client->connect_entities($book1, "similar_to", $book2);
+  $client->connect_entities($book1, "similar_to", $book3);
 
-  ok ( $collection->count() == 0, "count must be initially zero" );
+  $collection = $client->query_connections($book1, "similar_to");
 
-  for (my $i = 0; $i < 30; $i++) {
-    $client->add_entity("books", { name => "book $i", index => $i });
-  }
-
-  $collection = $client->get_collection("books", 30);
-
-  ok ( $collection->count() == 30, "count must now be 30" );
-
-  $book = $collection->get_first_entity();
-
-  ok ( $book->get('index') eq '0', "first index should be 0");
-
-  $book = $collection->get_last_entity();
-
-  ok ( $book->get('index') eq '29', "last index should be 29");
-
-  $subset = $client->query_collection("books", "select * where index = '5'", 15 );
-
-  ok ( $subset->count() == 1, "subset is 1" );
-  ok ( $subset->object->{'params'}->{'limit'}[0] eq '15', "check limit override" );
-
-  $book = $subset->get_next_entity();
-
-  ok ( $book->get('index') eq '5', "query returned the fifth book" );
+  ok ( $collection->count == 2, "two connections must exist" );
 
   while ($collection->has_next_entity()) {
     $book = $collection->get_next_entity();
-    $client->delete_entity($book);
+    ok ( $book->get('name') eq 'Count Zero' || $book->get('name') eq ('Mona Lisa Overdrive'), "check connections");
   }
 
-  $collection = $client->get_collection("books");
+  $client->disconnect_entities($book1, "similar_to", $book2);
 
-  ok ( $collection->count() == 0, "count must now be again zero" );
+  $collection = $client->query_connections($book1, "similar_to");
 
+  ok ( $collection->count() == 1 );
+
+  $book = $collection->get_next_entity();
+
+  ok ( $book->get('name') eq 'Mona Lisa Overdrive', "check remaining connection");
 };
 
 diag($@) if $@;
 
 # Cleanup
-$collection = $client->delete_collection("books", undef, 30);
+$client->delete_collection("books", undef, 10);
 $client->delete_entity($user);

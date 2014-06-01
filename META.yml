@@ -1,5 +1,5 @@
 ---
-abstract: 'Common functionality'
+abstract: 'Usergrid Perl Client'
 author:
   - 'Anuradha Weeraman <anuradha@cpan.org>'
 build_requires:
@@ -16,11 +16,9 @@ name: Usergrid-Client
 provides:
   Usergrid::Client:
     file: lib/Usergrid/Client.pm
+    version: '0.2'
   Usergrid::Collection:
     file: lib/Usergrid/Collection.pm
-  Usergrid::Core:
-    file: lib/Usergrid/Core.pm
-    version: '0.11'
   Usergrid::Entity:
     file: lib/Usergrid/Entity.pm
   Usergrid::Request:
@@ -34,4 +32,4 @@ requires:
   namespace::autoclean: '0'
 resources:
   license: http://www.apache.org/licenses/LICENSE-2.0.txt
-version: '0.11'
+version: '0.2'

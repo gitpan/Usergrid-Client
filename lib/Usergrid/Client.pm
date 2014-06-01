@@ -20,7 +20,11 @@ use namespace::autoclean;
 use Usergrid::Entity;
 use Usergrid::Collection;
 
-extends 'Usergrid::Core';
+with (
+  'Usergrid::Request',
+);
+
+our $VERSION = '0.2';
 
 =head1 NAME
 
@@ -196,7 +200,7 @@ sub get_collection {
       limit        => ( defined $limit ) ? $limit: 10
   );
 
-  return Usergrid::Collection->new( object => $self->GET($uri) );
+  return $self->collection($self->GET($uri), $uri);
 }
 
 =item update_collection ($collection, $properties, [$query], [$limit])
@@ -220,7 +224,7 @@ sub update_collection {
       query        => ( defined $query ) ? $query : undef
   );
 
-  return Usergrid::Collection->new( object => $self->PUT($uri, $properties) );
+  return $self->collection($self->PUT($uri, $properties), $uri);
 }
 
 =item delete_collection ($collection, [$query], [$limit])
@@ -243,7 +247,7 @@ sub delete_collection {
       query        => ( defined $query ) ? $query : undef
   );
 
-  return Usergrid::Collection->new( object => $self->DELETE($uri) );
+  return $self->collection($self->DELETE($uri), $uri);
 }
 
 =item query_collection ($collection, $query, [$limit])
@@ -265,7 +269,7 @@ sub query_collection {
       ql           => $query
   );
 
-  return Usergrid::Collection->new( object => $self->GET($uri) );
+  return $self->collection($self->GET($uri), $uri);
 }
 
 =item delete_entity_by_id ($collection, $id)
@@ -308,6 +312,78 @@ sub delete_entity {
   return Usergrid::Entity->new( object => $self->DELETE($uri) );
 }
 
+=item connect_entities ($connecting_entity, $relationship, $connected_entity)
+
+Creates a connection between the two entities signified by the relationship.
+
+=cut
+sub connect_entities {
+  my ($self, $connecting, $relationship, $connected) = @_;
+
+  my $uri = URI::Template
+    ->new ('/{organization}/{application}/{connecting_collection}/{connecting}/{relationship}/{connected_collection}/{connected}')
+    ->process(
+      organization          => $self->organization,
+      application           => $self->application,
+      connecting_collection => $connecting->get('type'),
+      connecting            => $connecting->get('uuid'),
+      relationship          => $relationship,
+      connected_collection  => $connected->get('type'),
+      connected             => $connected->get('uuid')
+    );
+
+    return Usergrid::Entity->new ( object => $self->POST($uri));
+}
+
+=item query_connections ($entity, $relationship, [$query], [$limit])
+
+Returns a collection of entities for the given relationship, optionally filtered
+by a query and limited to the maximum number of records specified. If no limit
+is provided, a default of 10 is assumed.
+
+=cut
+sub query_connections {
+  my ($self, $entity, $relationship, $query, $limit) = @_;
+
+  my $uri = URI::Template
+    ->new('/{organization}/{application}/{collection}/{id}/{relationship}?limit={limit}&ql={ql}')
+    ->process(
+      organization => $self->organization,
+      application  => $self->application,
+      collection   => $entity->get('type'),
+      id           => $entity->get('uuid'),
+      relationship => $relationship,
+      limit        => ( defined $limit ) ? $limit : 10,
+      ql           => $query
+  );
+
+  return $self->collection($self->GET($uri), $uri);
+}
+
+=item disconnect_entities ($connecting_entity, $relationship, $connected_entity)
+
+Removes the connection between the two entities signified by the relationship.
+
+=cut
+sub disconnect_entities {
+my ($self, $connecting, $relationship, $connected) = @_;
+
+my $uri = URI::Template
+  ->new ('/{organization}/{application}/{connecting_collection}/{connecting}/{relationship}/{connected_collection}/{connected}')
+  ->process(
+    organization          => $self->organization,
+    application           => $self->application,
+    connecting_collection => $connecting->get('type'),
+    connecting            => $connecting->get('uuid'),
+    relationship          => $relationship,
+    connected_collection  => $connected->get('type'),
+    connected             => $connected->get('uuid')
+  );
+
+  return Usergrid::Entity->new ( object => $self->DELETE($uri));
+
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;
@@ -318,7 +394,7 @@ __END__
 
 =head1 SEE ALSO
 
-L<Usergrid::Core>, L<Usergrid::Collection>, L<Usergrid::Entity>, L<Usergrid::Request>
+L<Usergrid::Collection>, L<Usergrid::Entity>, L<Usergrid::Request>
 
 =head1 LICENSE
 

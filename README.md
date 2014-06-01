@@ -7,7 +7,7 @@ Apache Usergrid's REST API.
 
 Install Usergrid::Client from CPAN:
 
-    $ sudo cpan install Usergrid::Client
+    $ sudo cpan Usergrid::Client
 
 Write a perl script that uses the Perl API to talk to Usergrid. Here's an example:
 
@@ -57,6 +57,7 @@ from CPAN as shown below:
     $ sudo cpan install REST::Client
     $ sudo cpan install URI::Template
     $ sudo cpan install Log::Log4perl
+    $ sudo cpan install namespace::autoclean
 
 ### Build and install
 
@@ -106,7 +107,6 @@ my $client = Usergrid::Client->new(
 To get more details on the API, read the following perldocs:
 
     Usergrid::Client
-    Usergrid::Core
     Usergrid::Collection
     Usergrid::Entity
 
@@ -124,6 +124,11 @@ For generating reports on code coverage:
 The generated report artifacts are located in cover_db/.
 
 ## Release notes
+
+### 0.2
+
+* Creating, querying and deleting entity connections
+* Bi-directional collection pagination
 
 ### 0.11
 
