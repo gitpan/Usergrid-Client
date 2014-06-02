@@ -16,7 +16,7 @@ name: Usergrid-Client
 provides:
   Usergrid::Client:
     file: lib/Usergrid/Client.pm
-    version: '0.2'
+    version: '0.21'
   Usergrid::Collection:
     file: lib/Usergrid/Collection.pm
   Usergrid::Entity:
@@ -32,4 +32,4 @@ requires:
   namespace::autoclean: '0'
 resources:
   license: http://www.apache.org/licenses/LICENSE-2.0.txt
-version: '0.2'
+version: '0.21'

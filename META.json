@@ -38,7 +38,7 @@
    "provides" : {
       "Usergrid::Client" : {
          "file" : "lib/Usergrid/Client.pm",
-         "version" : "0.2"
+         "version" : "0.21"
       },
       "Usergrid::Collection" : {
          "file" : "lib/Usergrid/Collection.pm"
@@ -56,5 +56,5 @@
          "http://www.apache.org/licenses/LICENSE-2.0.txt"
       ]
    },
-   "version" : "0.2"
+   "version" : "0.21"
 }
