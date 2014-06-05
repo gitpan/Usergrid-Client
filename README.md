@@ -1,4 +1,4 @@
-# Usergrid Perl Client
+# Usergrid Perl Client ![CI status](https://travis-ci.org/aweeraman/usergrid-perl-sdk.svg?branch=master "CI Status")
 
 Usergrid::Client provides an easy to use Perl API for Apache Usergrid.
 
@@ -208,6 +208,20 @@ $collection->get_prev_page();
 Both of the above return FALSE if the end or the beginning of the collection
 is reached.
 
+When iterating through a collection, the auto_page attribute can be set
+to allow the collection to transparently fetch the next page when iterating.
+
+```perl
+$collection = $client->get_collection("books");
+
+$collection->auto_page(1);
+
+while ($collection->has_next_entity()) {
+  my $entity = $collection->get_next_entity();
+  # do something
+}
+```
+
 ### Querying & Batch Updates
 
 Collections can be queried using a SQL-like query language for greater control
@@ -285,6 +299,14 @@ For generating reports on code coverage:
 The generated report artifacts are located in cover_db/.
 
 ## Release notes
+
+### 0.22
+
+* Auto paging for collections
+
+### 0.21
+
+* Documentation updates
 
 ### 0.2
 
